@@ -1,0 +1,11 @@
+NOEUD
+Un noeud est un tuple contenant 4 éléments:
+- un numéro d'identification
+- le numéro d'identification du noeud supérieur
+- la variable qu'il étudie
+- la valeur de division
+
+ARBRE
+Un arbre est une liste contenant 
+- les paramètres de l'arbre (nb minimal d'elément dans chaque feuille, fonction d'hétéro,...)
+- les noeuds (tuples)
