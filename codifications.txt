@@ -5,6 +5,7 @@ Un noeud est un tuple contenant 4 éléments:
 - le numéro d'identification des noeuds inférieurs
 - la variable qu'il étudie
 - la valeur de division
+- son statut : intermédiaire ou final
 
 ARBRE
 Un arbre est une liste contenant 
