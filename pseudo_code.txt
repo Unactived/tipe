@@ -20,4 +20,4 @@ Diviser les éléments en fonction d'une des variables là où la valeur de la f
 et enregistrer.
 
 SORTIE :
-sous-groupes résultants de la division.
+2 sous-groupes résultants de la division.
