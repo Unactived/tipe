@@ -19,5 +19,11 @@ Pour toutes les variables :
 Diviser les éléments en fonction d'une des variables là où la valeur de la fonction d'hétérogénéité est la plus faible parmi toutes les divisions possibles de toutes les variables
 et enregistrer.
 
+Pour tous sous-groupes résultants :
+    Si sa taille est plus grand que 2 fois min :
+        Le marquer "noeud intermédiaire"
+    Sinon :
+        Le marquer "feuille"
+
 SORTIE :
-2 sous-groupes résultants de la division.
+2 sous-groupes éstampillés résultants de la division.
