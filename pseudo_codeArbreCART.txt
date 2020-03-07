@@ -1,0 +1,6 @@
+ENTREE :
+base de donnée
+min_node := nombre minimal d'éléments dans les feuilles
+fonction de transfert
+
+ALGO :
