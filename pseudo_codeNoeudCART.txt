@@ -3,6 +3,7 @@ Voici le pseudo-code naïf de création d'un noeud d'un arbre de classification 
 ENTREES : 
 groupe de données
 var_cible := la variable déterminée.
+var_cible_pos := tuple des différentes valeurs que prend var_cible (par ex: (mort, vivant) )
 min := nombre minimal d'élément dans les feuilles
 fonction d'hétérogénéité
 
