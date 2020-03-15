@@ -84,7 +84,7 @@ def _c45_parser(fichier_names: str) -> list:
         else:
             caracteristiques.append(ligne[:ligne.index(':')].strip())
 
-        caracteristiques.append("final") # Le dernier champ est le résultat
+    caracteristiques.append("final") # Le dernier champ est le résultat
 
     return caracteristiques
 
