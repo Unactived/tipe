@@ -1,28 +1,28 @@
 l = sorted(groupe, key=lambda variable: variable[caracteristique]) #les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
 
 def frequence(groupe:list, var_cible_pos:tuple, caracteristique:str)->list:
-	"""renvoie la liste des fréquences des éléments de groupe avec les valeurs de la caractéristique"""
-	frequence = [0 for i in range(len(var_cible_pos))]
+    """renvoie la liste des fréquences des éléments de groupe avec les valeurs de la caractéristique"""
+    frequence = [0 for i in range(len(var_cible_pos))]
     
     for i in groupe:
-    	for j, k in enumerate(var_cible_pos):
-    		if i[caracteristique] == k:
-    			frequence[j] += 1
+        for j, k in enumerate(var_cible_pos):
+            if i[caracteristique] == k:
+                frequence[j] += 1
 
     n = len(groupe)
 
     for i in range(len(frequence)):
-    	frequence[i] /= n
+        frequence[i] /= n
 
     return frequence
 
 def fonction_indice_de_Gini(frequence:list)->float:
-	"""fonction d'hétérogénéité calculant l'indice de diversité de Gini"""
-	
-	somme = 0
+    """fonction d'hétérogénéité calculant l'indice de diversité de Gini"""
+    
+    somme = 0
     
     for i in frequence:
-    	somme += i**2
+        somme += i**2
 
     return 1 - somme
 
@@ -37,7 +37,7 @@ def procedure_indice_de_diversite_de_Gini(groupe:list, var_cible_pos:tuple, cara
     frequence_droite = frequence(groupe[indice_de_decoupage:], var_cible_pos, caracteristique)
 
     Gini_avant = fonction_indice_de_Gini(frequence) #indice de Gini avant séparation
-	Gini_gauche = fonction_indice_de_Gini(frequence_gauche)
-	Gini_droite = fonction_indice_de_Gini(frequence_droite)
+    Gini_gauche = fonction_indice_de_Gini(frequence_gauche)
+    Gini_droite = fonction_indice_de_Gini(frequence_droite)
 
-	return Gini_avant - (Gini_gauche + Gini_droite)
+    return Gini_avant - (Gini_gauche + Gini_droite)
