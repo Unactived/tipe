@@ -20,27 +20,28 @@ class Noeud:
 
     # ceci fixe les attributs possibles de la classe
     # cela permet notamment de grandement réduire la mémoire utilisée
-    __slots__ = ['seuil', 'gauche', 'droite']
+    __slots__ = ['caracteristique', 'seuil', 'gauche', 'droite']
 
-    def __init__(self, seuil: float, gauche, droite):
+    def __init__(self, caracteristique: str, seuil: float, gauche, droite):
         """
-        Constructeur de la classe, prend 3 arguments.
+        Constructeur de la classe, prend 4 arguments.
         Ne fait que les assigner aux attributs de même nom.
 
         """
 
+        self.caracteristique = caracteristique
         self.seuil = seuil
         self.gauche = gauche
         self.droite = droite
 
-    def suivant(self, valeur: float):
+    def suivant(self, dico: dict):
         """
-        Compare la valeur passée en argument à la valeur seuil du noeud
-        et renvoie l'attribut gauche ou droite selon le résultat de leur comparaison.
+        Compare la valeur du dictionnaire en argument, indexée par la caractéristique du noeud,
+        à la valeur seuil du noeud et renvoie l'attribut gauche ou droite selon le résultat de leur comparaison.
 
         """
 
-        if valeur <= self.seuil:
+        if dico[self.caracteristique] <= self.seuil:
             return self.gauche
 
         return self.droite
