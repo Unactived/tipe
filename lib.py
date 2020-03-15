@@ -7,6 +7,7 @@
 # gauche si la valeur X est inférieure ou égale à seuil ;
 # droite sinon i.e. la valeur X est strictement supérieure à seuil
 
+
 class Noeud:
     """
     Classe représentant un noeud de l'arbre
@@ -41,5 +42,84 @@ class Noeud:
 
         if valeur <= self.seuil:
             return self.gauche
+
+        return self.droite
+
+def _c45_parser(fichier_names: str) -> list:
+    """
+    Parse le fichier .names d'un dataset au format C4.5
+
+    Renvoie les caractéristiques d'une instance considérée.
+    """
+
+    with open(fichier_names, 'r') as fichier:
+        lignes = fichier.read().split('\n')
+
+    classes_definies = False
+    caracteristiques = []
+
+    # On retire les commentaires, signalés par '|'
+    # Le point suivi d'un espace termine la ligne
+    for ligne in lignes:
+        index = ligne.find('|')
+
+        if index != -1:
+            ligne = ligne[:index]
+
+        index = ligne.find('. ') # l'espace après le point est significatif
+
+        if index != -1:
+            ligne = ligne[:index]
+
+        if not ligne: # ligne vide
+            continue
+
+        if ligne.endswith('.'):
+            ligne = ligne[:-1] # le point final est faculatif, tout comme l'espace le suivant
+
+        if not classes_definies:
+            # La première vraie ligne est l'énumération des classes finales possibles
+            classes = [word.strip() for word in ligne.split(',')] # Inutilisé, il s'agit des valeurs finales possibles
+            classes_definies = True
         else:
-            return self.droite
+            caracteristiques.append(ligne[:ligne.index(':')].strip())
+
+        caracteristiques.append("final") # Le dernier champ est le résultat
+
+    return caracteristiques
+
+def c45_interpreter(fichier_names: str, fichier_data: str):
+    """
+    Prend en argument le chemin du fichier contenant la description du set
+    et le chemin du fichier contenant les données du set
+
+    Renvoie la liste des caractéristiques ainsi qu'une liste de dictionnaires,
+    chaque dictionnaire étant une instance indexée par ses caractéristiques
+
+    """
+
+    caracteristiques = _c45_parser(fichier_names)
+
+    with open(fichier_data, 'r') as fichier:
+        lignes = fichier.read().split('\n')
+
+    dictionnaires = []
+
+    for ligne in lignes:
+        dico = {}
+        valeurs = ligne.split(',')
+
+        for caracteristique, valeur in zip(caracteristiques, valeurs):
+            # À moins d'utiliser des regex, seule façon réellement correcte
+            try:
+                valeur = int(valeur)
+            except ValueError:
+                try:
+                    valeur = float(valeur)
+                except ValueError:
+                    pass
+            dico[caracteristique] = valeur
+
+        dictionnaires.append(dico)
+
+    return caracteristiques, dictionnaires
