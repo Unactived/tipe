@@ -1,4 +1,4 @@
-l = sorted(groupe, key=lambda variable: variable[caracteristique]) #les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
+groupe = sorted(groupe, key=lambda variable: variable[caracteristique]) #les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
 
 def frequence(groupe:list, var_cible_pos:tuple, caracteristique:str)->list:
     """renvoie la liste des fréquences des éléments de groupe avec les valeurs de la caractéristique"""
