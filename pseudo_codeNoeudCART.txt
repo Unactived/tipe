@@ -2,21 +2,23 @@ Voici le pseudo-code naïf de création d'un noeud d'un arbre de classification 
 
 ENTREES : 
 groupe de données
+var_cible := la variable déterminée.
 min := nombre minimal d'élément dans les feuilles
+fonction d'hétérogénéité
 
 ALGO :
 Si le groupe est trop petit :
-    L'enregistrer comme feuille et finir cet algorithme.
+    finir cet algorithme.
 
-Pour toutes les variables :
-    Classer les éléments par ordre croissant de cette variable.
+Pour toutes les caractéristiques sauf var_cible :
+    Classer les éléments par ordre croissant de cette caractéristique.
     Pour toutes les valeurs, à partir de la min-ième valeur jusqu'à la min-ieme valeur en partant de la fin :
-        Calculer la fonction d'hétérogénéité en incluant la min-ième valeur et enregistrer la valeur de la fonction.
+        Calculer la fonction d'hétérogénéité en incluant la min-ième valeur et enregistrer le résultat de la fonction.
         #Etant donné que les fonctions d'hétérogénéité sont concaves, on peut s'arrêter si on a dépassé le maximum de la fonction.
         #Le graphe dépend de la fontion : le maximum de la fonction gain d'information (entropie de Shannon) est situé avant la maximum de la fonction indice de Gini.
         #-> Quel impact ?
 
-Diviser les éléments en fonction d'une des variables là où la valeur de la fonction d'hétérogénéité est la plus faible parmi toutes les divisions possibles de toutes les variables
+Diviser les éléments en fonction d'une des caractéristiques là où le résultat de la fonction d'hétérogénéité est le plus faible parmi toutes les divisions possibles de toutes les caractéristiques
 et enregistrer.
 
 Pour tous sous-groupes résultants :
