@@ -1,20 +1,4 @@
-groupe = sorted(groupe, key=lambda variable: variable[caracteristique]) #les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
-
-def frequence(groupe:list, var_cible_pos:tuple, caracteristique:str)->list:
-    """renvoie la liste des fréquences des éléments de groupe avec les valeurs de la caractéristique"""
-    frequence = [0 for i in range(len(var_cible_pos))]
-    
-    for i in groupe:
-        for j, k in enumerate(var_cible_pos):
-            if i[caracteristique] == k:
-                frequence[j] += 1
-
-    n = len(groupe)
-
-    for i in range(len(frequence)):
-        frequence[i] /= n
-
-    return frequence
+import lib
 
 def fonction_indice_de_Gini(frequence:list)->float:
     """fonction d'hétérogénéité calculant l'indice de diversité de Gini"""
