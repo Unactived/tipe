@@ -22,17 +22,18 @@ class Noeud:
     # cela permet notamment de grandement réduire la mémoire utilisée
     __slots__ = ['caracteristique', 'seuil', 'gauche', 'droite']
 
-    def __init__(self, caracteristique: str, seuil: float, gauche, droite):
+    def __init__(self, caracteristique: str, seuil: float):
         """
-        Constructeur de la classe, prend 4 arguments.
-        Ne fait que les assigner aux attributs de même nom.
+        Constructeur de la classe, prend 2 arguments.
+        Ne fait que les assigner aux attributs de même nom, et créer deux emplacements
+        pour les noeuds suivants.
 
         """
 
         self.caracteristique = caracteristique
         self.seuil = seuil
-        self.gauche = gauche
-        self.droite = droite
+        self.gauche = None
+        self.droite = None
 
     def suivant(self, dico: dict):
         """
@@ -45,6 +46,44 @@ class Noeud:
             return self.gauche
 
         return self.droite
+
+    def afficher(self, *args):
+        """
+        Affiche la structure du noeud et des noeuds en dépendant
+        Les paramètres mis en jeu servent à la construction du résultat
+        et ne devraient pas être explicitement déclarés par l'utilisateur
+        (ne faire que noeud.afficher()).
+
+        La fonction renvoie None à l'utilisateur (durant la récursion
+        la fonction se renvoie une liste de chaînes de caractères).
+
+        Inspiré de solutions analogues en Java et Scala.
+
+        """
+
+        if not args:
+            # On initialise la récursion et affiche le futur résultat
+            constructeur = []
+            return print("\n".join(self.afficher([], "", "")))
+
+        constructeur, prefixe, prefixe_suivant = args
+
+        constructeur.append(f"{prefixe}{self.caracteristique}, {str(self.seuil)}")
+
+        gauche = self.gauche
+        droite = self.droite
+
+        if not type(gauche) is Noeud:
+            constructeur.append(f"{prefixe_suivant}├── {str(gauche)}")
+        else:
+            gauche.afficher(constructeur, prefixe_suivant + "├── ", prefixe_suivant + "│   ")
+
+        if not type(droite) is Noeud:
+            constructeur.append(f"{prefixe_suivant}└── {str(droite)}")
+        else:
+            droite.afficher(constructeur, prefixe_suivant + "└── ", prefixe_suivant + "    ")
+
+        return constructeur
 
 def _c45_parser(fichier_names: str) -> list:
     """
