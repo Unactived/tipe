@@ -260,5 +260,5 @@ def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
 
     noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
 
-    noeud_parent.gauche = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
-    noeud_parent.droite = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+    noeud_parent.gauche = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+    noeud_parent.droite = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
