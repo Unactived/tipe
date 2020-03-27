@@ -1,4 +1,4 @@
-import lib
+from lib import *
 
 def fonction_indice_de_Gini(frequence:list)->float:
     """fonction d'hétérogénéité calculant l'indice de diversité de Gini"""
