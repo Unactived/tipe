@@ -241,9 +241,9 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
 
     return noeud
 
-def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:function):
-    """crée un arbre récursivement"""
-    noeud_parent = creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:function)
+def suite_creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
+    """crée la suite d'un arbre récursivement à partir d'un certain noeud."""
+    noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
     
     if noeud_parent.gauche == None:#si noeud_parent n'est pas un noeud final
         
@@ -252,5 +252,13 @@ def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
         groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= noeud_parent.seuil]
         groupe_droite = [dico for dico in groupe if dico[caracteristique] > noeud_parent.seuil]
 
-        noeud_parent.gauche = creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe_gauche:list, procedure:function)
-        noeud_parent.droite = creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe_droite:list, procedure:function)
+        noeud_parent.gauche = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+        noeud_parent.droite = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+
+def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
+    """crée un arbre"""
+
+    noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
+
+    noeud_parent.gauche = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+    noeud_parent.droite = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
