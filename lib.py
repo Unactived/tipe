@@ -149,6 +149,8 @@ def c45_interpreter(fichier_names: str, fichier_data: str):
         dico = {}
         valeurs = ligne.split(',')
 
+        manque = False
+
         for caracteristique, valeur in zip(caracteristiques, valeurs):
             # À moins d'utiliser des regex, seule façon réellement correcte
             try:
@@ -157,10 +159,13 @@ def c45_interpreter(fichier_names: str, fichier_data: str):
                 try:
                     valeur = float(valeur)
                 except ValueError:
-                    pass
+                    if not valeur:
+                        manque = True
+                        continue
             dico[caracteristique] = valeur
 
-        dictionnaires.append(dico)
+        if not manque:
+            dictionnaires.append(dico)
 
     return caracteristiques, dictionnaires
 
@@ -197,7 +202,7 @@ def estampillage(var_cible:str, var_cible_pos:list, groupe:list):
     
     return var_cible_pos[l_nb_pos.index(max(l_nb_pos))]
 
-def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:function):
+def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:'function'):
 
     if len(groupe) <= min:
         print("Groupe donné en entrée trop petit")
@@ -230,10 +235,10 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     val_gauche = None
     val_droite = None
     if len(groupe_gauche) <= min:
-        val_gauche = estampillage(var_cible:str, var_cible_pos:list, groupe_gauche:list)
+        val_gauche = estampillage(var_cible, var_cible_pos, groupe_gauche)
     
     if len(groupe_droite) <= min:
-        val_droite = estampillage(var_cible:str, var_cible_pos:list, groupe_droite:list)
+        val_droite = estampillage(var_cible, var_cible_pos, groupe_droite)
     
     noeud = Noeud( liste_caract[num_caract], seuil )
     noeud.gauche = val_gauche
