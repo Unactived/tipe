@@ -180,13 +180,29 @@ def frequence(groupe:list, var_cible_pos:tuple, caracteristique:str)->list:
 
     return frequence
 
+
 #var_cible := la variable déterminée.
 #var_cible_pos := tuple des différentes valeurs que prend var_cible (par ex: (mort, vivant) )
 #min := nombre minimal d'élément dans les feuilles (à partir de 1)
 #liste_caract := liste des caractéristiques sauf la var_cible
-#groupe := lsite de dictionnaires (représentant les éléments)
+#groupe := liste de dictionnaires (représentant les éléments)
+
+def estampillage(var_cible:str, var_cible_pos:list, groupe:list):
+    """renvoie la valeur de var_cible la plus présente parmi groupe"""
+    
+    l_nb_pos = []
+    
+    for pos in var_cible_pos:    
+        l_nb_pos.append(len([0 for dico in groupe if dico[var_cible]==pos]))
+    
+    return var_cible_pos[l_nb_pos.index(max(l_nb_pos))]
+
 def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:function):
 
+    if len(groupe) <= min:
+        print("Groupe donné en entrée trop petit")
+        return False
+    
     resultats_fonction_heterogeneite = []
     for caracteristique in liste_caract:
         groupe = sorted(groupe, key=lambda variable: variable[caracteristique])#les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
@@ -195,30 +211,46 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
         #Ainsi, dans resultats_fonction_heterogeneite, il y a une liste par caractéristiques
     
     #ici commence l'algorithme de recherche du maximum
-    #pour chaque liste de resultats_fonction_heterogeneite, correspondant à une caractéristiques, on cherche le minimum.
+    #pour chaque liste de resultats_fonction_heterogeneite, correspondant à une caractéristiques, on cherche le maximum.
     #Ainsi, on a le meilleur point de coupure par caractéristique.
-    #Ensuite, on compare le minimum des caractéristiques. On aboutit au minimum parmi toutes les caractéristiques et toutes les valeurs, càd le meilleur point de coupure.
-    #On travaille sur les indices, pour garder en mémoire l'indice du minimum, puisque l'on veut à la fin savoir quel point de coupure garder, puis quelle variable étudier.
-    max_indice_1 = 0
-    l_max_indice_2 = []
-    for indice_1 in range(len(resultats_fonction_heterogeneite)):#on cherche l'indice du minimum et le minimum de chaque sous-liste de resultats_fonction_heterogeneite
-        max_indice_2 = 0
-        max_var_2 = resultats_fonction_heterogeneite[indice_1][0]
-        for indice_2, var_2 in enumerate( resultats_fonction_heterogeneite[indice_1] ):
-            if var_2 > max_var_2:
-                max_indice_2 = indice_2
-                max_var_2 = var_2
-        l_max_2.append( [ max_indice_2, max_var_2 ] )#on obtient un liste de sous-listes
-        #Dans l_max_2, chaque sous-liste correspond à une caractéristique.
-        #Une sous-liste comprend l'indice et la valeur du minimum des renvoies de la fonction d'hétérogénéité pour une caractéristiques
+    #Ensuite, on compare le maximum des caractéristiques. On aboutit au maximum parmi toutes les caractéristiques et toutes les valeurs, càd le meilleur point de coupure.
+    #On travaille sur les indices, pour garder en mémoire l'indice du maximum, puisque l'on veut à la fin savoir quel point de coupure garder, puis quelle variable étudier.
+    #on cherche l'indice du maximum et le maximum de chaque sous-liste de resultats_fonction_heterogeneite
+    l_max_var = [max(l) for l in resultats_fonction_heterogeneite]
+    l_max_indice = [l.index(max(l)) for l in resultats_fonction_heterogeneite]
+    
+    seuil = max(l_max_var)
+    num_caract = l_max_var.index(seuil)
+    caracteristique = liste_caract[num_caract]
+    
+    groupe = sorted(groupe, key=lambda variable: variable[caracteristique])
+    groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= seuil]
+    groupe_droite = [dico for dico in groupe if dico[caracteristique] > seuil]
+    
+    val_gauche = None
+    val_droite = None
+    if len(groupe_gauche) <= min:
+        val_gauche = estampillage(var_cible:str, var_cible_pos:list, groupe_gauche:list)
+    
+    if len(groupe_droite) <= min:
+        val_droite = estampillage(var_cible:str, var_cible_pos:list, groupe_droite:list)
+    
+    noeud = Noeud( liste_caract[num_caract], seuil )
+    noeud.gauche = val_gauche
+    noeud.droite = val_droite
 
-    #on cherche à présent le minimum entre les sous-listes
-    max_var = l_max_2[0][1]
-    max_indice = 0
-    for i in range(len(l_max_indice_2)):
-        if l_max_2[i][1] > max_var:
-            max_indice = i
-            max_var = l_max_2[i][1]
+    return noeud
 
-    Noeud( liste_caract[max_indice], l_max_2[min_indice][1], None, None)
-    return  liste_caract[max_indice], l_max_2[min_indice][1] # variable à étudier, valeur seuil
+def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:function):
+    """crée un arbre récursivement"""
+    noeud_parent = creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:function)
+    
+    if noeud_parent.gauche == None:#si noeud_parent n'est pas un noeud final
+        
+        groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
+        
+        groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= noeud_parent.seuil]
+        groupe_droite = [dico for dico in groupe if dico[caracteristique] > noeud_parent.seuil]
+
+        noeud_parent.gauche = creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe_gauche:list, procedure:function)
+        noeud_parent.droite = creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe_droite:list, procedure:function)
