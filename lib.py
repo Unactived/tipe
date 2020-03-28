@@ -257,8 +257,8 @@ def suite_creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_carac
         groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= noeud_parent.seuil]
         groupe_droite = [dico for dico in groupe if dico[caracteristique] > noeud_parent.seuil]
 
-        noeud_parent.gauche = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
-        noeud_parent.droite = creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+        noeud_parent.gauche = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+        noeud_parent.droite = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
 
 def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
     """crée un arbre"""
