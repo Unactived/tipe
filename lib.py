@@ -161,7 +161,7 @@ def c45_interpreter(fichier_names: str, fichier_data: str):
                 except ValueError:
                     if not valeur:
                         manque = True
-                        continue
+                        break
             dico[caracteristique] = valeur
 
         if not manque:

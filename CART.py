@@ -16,11 +16,11 @@ def procedure_indice_de_diversite_de_Gini(groupe:list, var_cible_pos:tuple, cara
     divise la liste en deux groupes selon le nombre d'élément à mettre dans l'un des groupes (indice_de_decoupage) ; 
     renvoie indice de Gini(avant séparation) - [ indice de Gini(gauche) + indice de Gini(droite) ] """
     
-    frequence = frequence(groupe, var_cible_pos, caracteristique)
+    frequence_parent = frequence(groupe, var_cible_pos, caracteristique)
     frequence_gauche = frequence(groupe[:indice_de_decoupage], var_cible_pos, caracteristique)
     frequence_droite = frequence(groupe[indice_de_decoupage:], var_cible_pos, caracteristique)
 
-    Gini_avant = fonction_indice_de_Gini(frequence) #indice de Gini avant séparation
+    Gini_avant = fonction_indice_de_Gini(frequence_parent) #indice de Gini avant séparation
     Gini_gauche = fonction_indice_de_Gini(frequence_gauche)
     Gini_droite = fonction_indice_de_Gini(frequence_droite)
 
