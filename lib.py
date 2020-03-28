@@ -253,20 +253,22 @@ def suite_creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_carac
     if noeud_parent.gauche == None:#si noeud_parent n'est pas un noeud final
         
         groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
-        
-        groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= noeud_parent.seuil]
-        groupe_droite = [dico for dico in groupe if dico[caracteristique] > noeud_parent.seuil]
-
+        groupe_gauche = [dico for dico in groupe if dico[noeud_parent.caracteristique] <= noeud_parent.seuil]
         noeud_parent.gauche = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+
+    if noeud_parent.droite == None:#si noeud_parent n'est pas un noeud final
+        
+        groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
+        groupe_droite = [dico for dico in groupe if dico[noeud_parent.caracteristique] > noeud_parent.seuil]
         noeud_parent.droite = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
 
 def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
     """crée un arbre"""
 
     noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
-    
-    groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= noeud_parent.seuil]
-    groupe_droite = [dico for dico in groupe if dico[caracteristique] > noeud_parent.seuil]
+    print(type(noeud_parent), dir(noeud_parent))
+    groupe_gauche = [dico for dico in groupe if dico[noeud_parent.caracteristique] <= noeud_parent.seuil]
+    groupe_droite = [dico for dico in groupe if dico[noeud_parent.caracteristique] > noeud_parent.seuil]
     
     noeud_parent.gauche = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
     noeud_parent.droite = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
