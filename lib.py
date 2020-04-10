@@ -206,7 +206,7 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
 
     if len(groupe) <= min:
         print("Groupe donné en entrée trop petit")
-        return False
+        return None
     
     resultats_fonction_heterogeneite = []
     for caracteristique in liste_caract:
@@ -224,11 +224,13 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     l_max_var = [max(l) for l in resultats_fonction_heterogeneite]
     l_max_indice = [l.index(max(l)) for l in resultats_fonction_heterogeneite]
     
-    seuil = max(l_max_var)
-    num_caract = l_max_var.index(seuil)
+    max_f_htn = max(l_max_var) #valeur maximale de la fonction d'hétérogénéité
+    num_caract = l_max_var.index(max_f_htn)
     caracteristique = liste_caract[num_caract]
     
     groupe = sorted(groupe, key=lambda variable: variable[caracteristique])
+    seuil = groupe[l_max_indice[num_caract] + min - 1][caracteristique]
+    
     groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= seuil]
     groupe_droite = [dico for dico in groupe if dico[caracteristique] > seuil]
     
