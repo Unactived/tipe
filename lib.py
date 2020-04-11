@@ -247,10 +247,13 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     val_droite = None
     # print("len(groupe_gauche)", len(groupe_gauche), "len(groupe_droite)", len(groupe_droite))
     if len(groupe_gauche) <= 2*min-1:
-        val_gauche = estampillage(var_cible, var_cible_pos, groupe_gauche)
+        val_estampillee = estampillage(var_cible, var_cible_pos, groupe_gauche)
+        val_gauche = val_estampillee, frequence(groupe_gauche, [val_estampillee], "final"), len(groupe_gauche)
     
     if len(groupe_droite) <= 2*min-1:
-        val_droite = estampillage(var_cible, var_cible_pos, groupe_droite)
+        val_estampillee = estampillage(var_cible, var_cible_pos, groupe_droite)
+        val_droite = val_estampillee, frequence(groupe_droite, [val_estampillee], "final"), len(groupe_droite)
+    
     
     noeud = Noeud( liste_caract[num_caract], seuil )
     # print("val_gauche", val_gauche, "val_droite", val_droite)
