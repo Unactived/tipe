@@ -202,16 +202,21 @@ def estampillage(var_cible:str, var_cible_pos:list, groupe:list):
     
     return var_cible_pos[l_nb_pos.index(max(l_nb_pos))]
 
-def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:'function'):
+test = 0
 
-    if len(groupe) <= min:
-        print("Groupe donné en entrée trop petit")
-        return None
+def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:'function'):
+    global test
+    # print("len(groupe)",len(groupe))
+    # if len(groupe) <= 2*min:
+    #     print("Groupe donné en entrée trop petit")
+    #     return False
     
     resultats_fonction_heterogeneite = []
     for caracteristique in liste_caract:
+        print(test,caracteristique)
         groupe = sorted(groupe, key=lambda variable: variable[caracteristique])#les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
-        resultats_fonction_heterogeneite.append( [ procedure(groupe, var_cible_pos, caracteristique, indice_de_decoupage) for indice_de_decoupage in range(min, len(groupe)-min) ] )
+        # print("list(range(min, len(groupe)-min+1))", list(range(min, len(groupe)-min+1)))
+        resultats_fonction_heterogeneite.append( [ procedure(groupe, var_cible_pos, caracteristique, indice_de_decoupage) for indice_de_decoupage in range(min, len(groupe)-min+1) ] )
         #la liste créée par compréhension est la liste des valeurs renvoyées par la fonction d'hétérogénéité pour toute les valeurs possibles
         #Ainsi, dans resultats_fonction_heterogeneite, il y a une liste par caractéristiques
     
@@ -223,56 +228,65 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     #on cherche l'indice du maximum et le maximum de chaque sous-liste de resultats_fonction_heterogeneite
     l_max_var = [max(l) for l in resultats_fonction_heterogeneite]
     l_max_indice = [l.index(max(l)) for l in resultats_fonction_heterogeneite]
-    
+    # print(l_max_var)
     max_f_htn = max(l_max_var) #valeur maximale de la fonction d'hétérogénéité
     num_caract = l_max_var.index(max_f_htn)
     caracteristique = liste_caract[num_caract]
     
     groupe = sorted(groupe, key=lambda variable: variable[caracteristique])
     seuil = groupe[l_max_indice[num_caract] + min - 1][caracteristique]
-    
+
+    # print("seuil", seuil)
+    # for i in groupe:
+    #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique)
+        
     groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= seuil]
     groupe_droite = [dico for dico in groupe if dico[caracteristique] > seuil]
-    
+    # print("groupe == groupe_gauche",groupe == groupe_gauche)
     val_gauche = None
     val_droite = None
-    if len(groupe_gauche) <= min:
+    # print("len(groupe_gauche)", len(groupe_gauche), "len(groupe_droite)", len(groupe_droite))
+    if len(groupe_gauche) <= 2*min-1:
         val_gauche = estampillage(var_cible, var_cible_pos, groupe_gauche)
     
-    if len(groupe_droite) <= min:
+    if len(groupe_droite) <= 2*min-1:
         val_droite = estampillage(var_cible, var_cible_pos, groupe_droite)
     
     noeud = Noeud( liste_caract[num_caract], seuil )
+    # print("val_gauche", val_gauche, "val_droite", val_droite)
     noeud.gauche = val_gauche
     noeud.droite = val_droite
-
+    
+    noeud.afficher()
+    
     return noeud
 
-def suite_creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
+def suite_creation_arbre(noeud_parent, var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
     """crée la suite d'un arbre récursivement à partir d'un certain noeud."""
-    noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
+    global test
+    test+=1
+    print(test)
     
-    if noeud_parent.gauche == None:#si noeud_parent n'est pas un noeud final
+    if type(noeud_parent) == Noeud:#si noeud_parent n'est pas une feuille
         
-        groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
-        groupe_gauche = [dico for dico in groupe if dico[noeud_parent.caracteristique] <= noeud_parent.seuil]
-        noeud_parent.gauche = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+        if noeud_parent.gauche == None:
+            
+            groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
+            groupe_gauche = [dico for dico in groupe if dico[noeud_parent.caracteristique] <= noeud_parent.seuil]
+            noeud_parent.gauche = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+            suite_creation_arbre(noeud_parent.gauche, var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
 
-    if noeud_parent.droite == None:#si noeud_parent n'est pas un noeud final
-        
-        groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
-        groupe_droite = [dico for dico in groupe if dico[noeud_parent.caracteristique] > noeud_parent.seuil]
-        noeud_parent.droite = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+        if noeud_parent.droite == None:
+            
+            groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
+            groupe_droite = [dico for dico in groupe if dico[noeud_parent.caracteristique] > noeud_parent.seuil]
+            noeud_parent.droite = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+            suite_creation_arbre(noeud_parent.droite, var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
 
 def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
     """crée un arbre"""
 
     noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
-    print(type(noeud_parent), dir(noeud_parent))
-    groupe_gauche = [dico for dico in groupe if dico[noeud_parent.caracteristique] <= noeud_parent.seuil]
-    groupe_droite = [dico for dico in groupe if dico[noeud_parent.caracteristique] > noeud_parent.seuil]
-    
-    noeud_parent.gauche = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
-    noeud_parent.droite = suite_creation_arbre(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+    suite_creation_arbre(noeud_parent,var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
     
     return noeud_parent
