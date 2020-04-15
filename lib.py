@@ -224,14 +224,20 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
         assert list(range(min, len(groupe)-min+1)) != [], "min est trop grand"
 
         liste_indice_de_decoupage = []
-        for i in range(1, len(groupe)):
+        for i in range(min, len(groupe)-min+1):
             if groupe[i][caracteristique] != groupe[i-1][caracteristique]:
                 liste_indice_de_decoupage.append(i)
+
         liste_des_listes_indice_de_decoupage.append(liste_indice_de_decoupage)
         
+        if liste_indice_de_decoupage == []:#si la liste est vide, alors toutes les valeurs pour cette caractéristique sont identiques
+            resultats_fonction_heterogeneite.append([0])#ce que renverrait procedure en n'importe quel point de decoupage
+            continue
+
+        # print("liste_indice_de_decoupage", liste_indice_de_decoupage)
         resultats_fonction_heterogeneite.append( [ procedure(groupe, var_cible, var_cible_pos, indice_de_decoupage) for indice_de_decoupage in liste_indice_de_decoupage ] )
-        for i in groupe:
-            print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
+        # for i in groupe:
+        #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
         # print("resultats_fonction_heterogeneite", resultats_fonction_heterogeneite)
         #la liste créée par compréhension est la liste des valeurs renvoyées par la fonction d'hétérogénéité pour toute les valeurs possibles
         #Ainsi, dans resultats_fonction_heterogeneite, il y a une liste par caractéristiques
@@ -240,17 +246,16 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     #pour chaque liste de resultats_fonction_heterogeneite, correspondant à une caractéristiques, on cherche le maximum.
     #Ainsi, on a le meilleur point de coupure par caractéristique.
     #Ensuite, on compare le maximum des caractéristiques. On aboutit au maximum parmi toutes les caractéristiques et toutes les valeurs, càd le meilleur point de coupure.
-    #On travaille sur les indices, pour garder en mémoire l'indice du maximum, puisque l'on veut à la fin savoir quel point de coupure garder, puis quelle variable étudier.
-    #on cherche l'indice du maximum et le maximum de chaque sous-liste de resultats_fonction_heterogeneite
     
     # print(" resultats_fonction_heterogeneite")
     # for i in range(len(resultats_fonction_heterogeneite)):
     #     print("caracteristique", liste_caract[i], "resultats_fonction_heterogeneite", resultats_fonction_heterogeneite[i])
-
-    l_max_var = [max(l) for l in resultats_fonction_heterogeneite if l != [] ]
+    # print("len(groupe)", len(groupe))
+    l_max_var = [max(l) for l in resultats_fonction_heterogeneite ]
     # print("l_max_var", l_max_var)
-    l_max_indice = [l.index(max(l)) for l in resultats_fonction_heterogeneite if l != []]
-    # print("l_max_var", l_max_var, "l_max_indice", l_max_indice)
+    l_max_indice = [l.index(max(l)) for l in resultats_fonction_heterogeneite ]
+    # print("l_max_var", l_max_var, "\nl_max_indice", l_max_indice)
+    
     max_f_htn = max(l_max_var) #valeur maximale de la fonction d'hétérogénéité
     # print("max_f_htn", max_f_htn)
     
@@ -260,32 +265,37 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     
     num_caract = l_max_var.index(max_f_htn)
     # print("num_caract", num_caract)
+    # print("resultats_fonction_heterogeneite[num_caract]", resultats_fonction_heterogeneite[num_caract])
     caracteristique = liste_caract[num_caract]
-    print("caracteristique", caracteristique)
+    # print("caracteristique", caracteristique)
     groupe = sorted(groupe, key=lambda variable: variable[caracteristique])
-    for i in groupe:
-        print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
-    aaaaaaaaaaaa = l_max_indice[num_caract]
-    bbbbbbbfgdfg = liste_des_listes_indice_de_decoupage[num_caract]
-    print("liste_des_listes_indice_de_decoupage[num_caract]", liste_des_listes_indice_de_decoupage[num_caract])
-    print("l_max_var", l_max_var)
-    print("l_max_var[num_caract]", l_max_var[num_caract])
-    print("l_max_indice", l_max_indice)
-    print("l_max_indice[num_caract]", l_max_indice[num_caract])
-    print(" resultats_fonction_heterogeneite", resultats_fonction_heterogeneite[num_caract])
-    cccccccccccc = liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]]
-    seuil = groupe[liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]]][caracteristique]
-    print(" resultats_fonction_heterogeneite caracteristique", resultats_fonction_heterogeneite[num_caract])
+    # for i in groupe:
+    #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
+    # aaaaaaaaaaaa = l_max_indice[num_caract]
+    # bbbbbbbfgdfg = liste_des_listes_indice_de_decoupage[num_caract]
+    
+    # print("l_max_var", l_max_var)
+    # print("l_max_var[num_caract]", l_max_var[num_caract])
+    # print("l_max_indice", l_max_indice)
+    # print("l_max_indice[num_caract]", l_max_indice[num_caract])
+    # print(" resultats_fonction_heterogeneite", resultats_fonction_heterogeneite[num_caract])
+    # for i in range(len(liste_des_listes_indice_de_decoupage[num_caract])):
+    #     print("i", i, "liste_des_listes_indice_de_decoupage[num_caract][i]", liste_des_listes_indice_de_decoupage[num_caract][i])
+    # for i in range(len(resultats_fonction_heterogeneite[num_caract])):
+    #     print("i", i, "resultats_fonction_heterogeneite[num_caract][i]", resultats_fonction_heterogeneite[num_caract][i])
+    # cccccccccccc = liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]-1]
+    seuil = groupe[liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]]-1][caracteristique]
+    # print(" resultats_fonction_heterogeneite caracteristique", resultats_fonction_heterogeneite[num_caract])
 
-    print("seuil", seuil)
-    for i in groupe:
-        print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
+    # print("seuil", seuil)
+    # for i in groupe:
+    #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
         
     groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= seuil]
     groupe_droite = [dico for dico in groupe if dico[caracteristique] > seuil]
-    print("groupe_droite", groupe_droite)
-    print("groupe == groupe_gauche",groupe == groupe_gauche)
-    print("caracteristique", caracteristique)
+    # print("groupe_droite", groupe_droite)
+    # print("groupe == groupe_gauche",groupe == groupe_gauche)
+    # print("caracteristique", caracteristique)
     val_gauche = None
     val_droite = None
     # print("len(groupe_gauche)", len(groupe_gauche), "len(groupe_droite)", len(groupe_droite))
