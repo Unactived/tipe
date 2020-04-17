@@ -296,22 +296,20 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     # print("groupe_droite", groupe_droite)
     # print("groupe == groupe_gauche",groupe == groupe_gauche)
     # print("caracteristique", caracteristique)
-    val_gauche = None
-    val_droite = None
     # print("len(groupe_gauche)", len(groupe_gauche), "len(groupe_droite)", len(groupe_droite))
+
+    noeud = Noeud( liste_caract[num_caract], seuil )
+
     if len(groupe_gauche) < 2*min:
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe_gauche)
-        val_gauche = val_estampillee, frequence(groupe_gauche, var_cible, [val_estampillee]), len(groupe_gauche)
+        noeud.gauche = val_estampillee, frequence(groupe_gauche, var_cible, [val_estampillee]), len(groupe_gauche)
     
     if len(groupe_droite) < 2*min:
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe_droite)
-        val_droite = val_estampillee, frequence(groupe_droite, var_cible, [val_estampillee]), len(groupe_droite)
-    
-    
-    noeud = Noeud( liste_caract[num_caract], seuil )
-    # print("val_gauche", val_gauche, "val_droite", val_droite)
-    noeud.gauche = val_gauche
-    noeud.droite = val_droite
+        noeud.droite = val_estampillee, frequence(groupe_droite, var_cible, [val_estampillee]), len(groupe_droite)
+
+
+    # print("noeud.gauche", noeud.gauche, "noeud.droite", noeud.droite)
     
     # noeud.afficher()
     
@@ -323,7 +321,7 @@ def suite_creation_arbre(noeud_parent, var_cible:str, var_cible_pos:list, min:in
     test+=1
     print(test)
     
-    if type(noeud_parent) == Noeud:#si noeud_parent n'est pas une feuille
+    if type(noeud_parent) == Noeud:
         
         if noeud_parent.gauche == None:
             
