@@ -176,11 +176,11 @@ def frequence(groupe:list, caracteristique:str, var_cible_pos:tuple)->list:
     renvoie la liste des fréquences des éléments de groupe avec les différentes valeurs de la caractéristique"""
     frequence = [0 for i in range(len(var_cible_pos))]
     
-    for i in groupe:
-        for j, k in enumerate(var_cible_pos):
-            # print(caracteristique)
-            if i[caracteristique] == k:
-                frequence[j] += 1
+
+    for element in groupe:
+        final = element[caracteristique]
+        final_index = var_cible_pos.index(final)
+        frequence[final_index] += 1
 
     n = len(groupe)
     # print("len(groupe)", len(groupe))
