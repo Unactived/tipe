@@ -1,5 +1,7 @@
 """Ressources pour arbres binaires"""
 
+from copy import deepcopy
+
 # Commentaires temporaires
 # ceci pourrait être utilisé à la fois par CART et CHAID
 #
@@ -344,3 +346,17 @@ def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     suite_creation_arbre(noeud_parent,var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
     
     return noeud_parent
+
+
+def exploitation(arbre, individu):
+    """Renvoie le résultat d'un arbre pour un individu"""
+
+    noeud = deepcopy(arbre) # On évite d'altérer l'arbre
+
+    while type(noeud) is Noeud:
+        noeud = noeud.suivant(individu)
+
+    # On obtient un triplet décrivant le noeud final
+    # dont le premier élément est la valeur désirée
+
+    return noeud[0]
