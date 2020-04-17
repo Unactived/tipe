@@ -198,12 +198,12 @@ def frequence(groupe:list, caracteristique:str, var_cible_pos:tuple)->list:
 
 def estampillage(var_cible:str, var_cible_pos:list, groupe:list):
     """renvoie la valeur de var_cible la plus présente parmi groupe"""
-    
+
     l_nb_pos = []
-    
-    for pos in var_cible_pos:    
+
+    for pos in var_cible_pos:
         l_nb_pos.append(len([0 for dico in groupe if dico[var_cible]==pos]))
-    
+
     return var_cible_pos[l_nb_pos.index(max(l_nb_pos))]
 
 test = 0
@@ -221,7 +221,7 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
         groupe = sorted(groupe, key=lambda variable: variable[caracteristique])#les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
         # print("len(groupe)", len(groupe))
         # print("list(range(min, len(groupe)-min+1))", list(range(min, len(groupe)-min+1)))
-        assert list(range(min, len(groupe)-min+1)) != [], "min est trop grand"
+        assert min <= len(groupe)-min+1, "min est trop grand"
 
         liste_indice_de_decoupage = []
         for i in range(min, len(groupe)-min+1):
@@ -258,8 +258,8 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     
     max_f_htn = max(l_max_var) #valeur maximale de la fonction d'hétérogénéité
     # print("max_f_htn", max_f_htn)
-    
-    if max_f_htn == 0:#équivaut au fait que le groupe soit homogène, donc on a une feuille
+
+    if max_f_htn == 0:#équivaut au fait que le groupe soit homogène
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe)
         return val_estampillee, frequence(groupe, var_cible, [val_estampillee]), len(groupe)
     
@@ -313,7 +313,7 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     noeud.gauche = val_gauche
     noeud.droite = val_droite
     
-    noeud.afficher()
+    # noeud.afficher()
     
     return noeud
 
