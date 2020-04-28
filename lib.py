@@ -1,6 +1,7 @@
 """Ressources pour arbres binaires"""
 
 from copy import deepcopy
+from random import choice
 
 # Commentaires temporaires
 # ceci pourrait être utilisé à la fois par CART et CHAID
@@ -36,6 +37,7 @@ class Noeud:
         self.seuil = seuil
         self.gauche = None
         self.droite = None
+        self.taux_erreur = None
 
     def suivant(self, dico: dict):
         """
@@ -360,3 +362,19 @@ def exploitation(arbre, individu):
     # dont le premier élément est la valeur désirée
 
     return noeud[0]
+
+def choix_aleatoire_jeu_test_et_apprentissage(groupe:list, proportion:float):
+    """prend en argument un groupe et la proportion du groupe qui doit servir de jeu d'apprentissage;
+    renvoie le jeu d'apprentissage et le jeu de test"""
+    
+    jeu_apprentissage = []
+    
+    for i in range( int(proportion*len(groupe)) ):
+        element = choice(groupe)
+        while element in jeu_apprentissage:
+            element = choice(groupe)
+        jeu_apprentissage.append(element)
+
+    jeu_test = [element for element in groupe if element not in jeu_apprentissage]
+
+    return jeu_apprentissage, jeu_test
