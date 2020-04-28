@@ -23,7 +23,7 @@ class Noeud:
 
     # ceci fixe les attributs possibles de la classe
     # cela permet notamment de grandement réduire la mémoire utilisée
-    __slots__ = ['caracteristique', 'seuil', 'gauche', 'droite']
+    __slots__ = ['caracteristique', 'seuil', 'gauche', 'droite', 'taux_erreur']
 
     def __init__(self, caracteristique: str, seuil: float):
         """
@@ -183,8 +183,9 @@ def frequence(groupe:list, caracteristique:str, var_cible_pos:tuple)->list:
 
     for element in groupe:
         final = element[caracteristique]
-        final_index = var_cible_pos.index(final)
-        frequence[final_index] += 1
+        if final in var_cible_pos:
+            final_index = var_cible_pos.index(final)
+            frequence[final_index] += 1
 
     n = len(groupe)
     # print("len(groupe)", len(groupe))
