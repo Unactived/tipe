@@ -5,7 +5,7 @@ def test_khi_2(groupe:list, var_cible:str, var_cible_pos:tuple, indice_de_decoup
 
     khi_2 = 0
 
-    for caracteristique in groupeA:
+    for caracteristique in groupe[0]:
         gauche, droite = sum((dico[caracteristique] for dico in groupeA)) + sum((dico[caracteristique] for dico in groupeB))
 
         theorique = (gauche + droite) / 2
