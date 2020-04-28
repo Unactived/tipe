@@ -64,7 +64,7 @@ def taux_erreur_arbre(noeud, jeu_test, var_cible, var_cible_pos):
     
     if type(noeud.droite) == Noeud:
         jeu_test_droite = [dico for dico in jeu_test if dico[noeud.caracteristique] <= noeud.seuil]
-        taux_erreur_arbre(noeud.droite, jeu_test_gauche, var_cible, var_cible_pos)
+        taux_erreur_arbre(noeud.droite, jeu_test_droite, var_cible, var_cible_pos)
 
 # def suppression_noeud(noeud_parent, noeud):
 #     """supprime un noeud si son taux d'erreur est supérieur à son noeud parent"""
