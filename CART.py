@@ -56,7 +56,7 @@ def taux_erreur_noeud(noeud, jeu_test:list, var_cible, var_cible_pos):
 def taux_erreur_arbre(noeud, jeu_test, var_cible, var_cible_pos):
     """associe à chaque noeud de l'arbre récursivement son taux d'erreur calculé à partir du jeu de test"""
 
-    taux_erreur_noeud(noeud, jeu_test:list, var_cible, var_cible_pos)
+    taux_erreur_noeud(noeud, jeu_test, var_cible, var_cible_pos)
     
     if type(noeud.gauche) == Noeud:
         jeu_test_gauche = [dico for dico in jeu_test if dico[noeud.caracteristique] <= noeud.seuil]

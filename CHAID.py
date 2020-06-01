@@ -1,15 +1,24 @@
+from lib import *
 def test_khi_2(groupe:list, var_cible:str, var_cible_pos:tuple, indice_de_decoupage:int) -> float:
     """Test du khi deux"""
 
-    groupeA, groupeB = groupe[indice_de_decoupage:], groupe[:indice_de_decoupage]
+    groupeGauche, groupeDroite = groupe[indice_de_decoupage:], groupe[:indice_de_decoupage]
 
     khi_2 = 0
 
-    for caracteristique in groupe[0]:
-        gauche, droite = sum((dico[caracteristique] for dico in groupeA)) + sum((dico[caracteristique] for dico in groupeB))
+    resultats = {}
 
-        theorique = (gauche + droite) / 2
+    # peut-être pas optimal
+    for pos in var_cible_pos:
 
-        khi_2 += ( (gauche - theorique)**2 + (droite - theorique)**2 ) / 2
+        G = sum([1 for groupe in groupeGauche if groupe[var_cible] == pos])
+        D = sum([1 for groupe in groupeDroite if groupe[var_cible] == pos])
 
+        theorique = (G + D) / 2
+
+        khi_2 += (G - theorique)**2 / theorique
+        khi_2 += (D - theorique)**2 / theorique
+
+    if khi_2 < 3.84:
+        return 0
     return khi_2
