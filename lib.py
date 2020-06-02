@@ -377,18 +377,21 @@ def exploitation(arbre, individu):
 
     return noeud[0]
 
-def choix_aleatoire_jeu_test_et_apprentissage(groupe:list, proportion:float):
+def choix_aleatoire_jeu_test_et_apprentissage(groupe:list, proportion:float, var_cible, var_cible_pos):
     """prend en argument un groupe et la proportion du groupe qui doit servir de jeu d'apprentissage;
     renvoie le jeu d'apprentissage et le jeu de test"""
+    liste_classes = [ [element for element in groupe if element[var_cible] == classe] for classe in var_cible_pos]
     
     jeu_apprentissage = []
     
-    for i in range( int(proportion*len(groupe)) ):
-        element = choice(groupe)
-        while element in jeu_apprentissage:
-            element = choice(groupe)
-        jeu_apprentissage.append(element)
+    for classe in liste_classes:
+        for i in range( int(proportion*len(classe)) ):
+            element = choice(classe)
+            while element in jeu_apprentissage:
+                element = choice(classe)
+            jeu_apprentissage.append(element)
 
     jeu_test = [element for element in groupe if element not in jeu_apprentissage]
 
     return jeu_apprentissage, jeu_test
+
