@@ -131,18 +131,6 @@ def taux_erreur_apprentissage_arbre(noeud:Noeud, jeu_apprentissage:list, var_cib
     return noeud.proportion_gauche*taux_gauche + noeud.proportion_droite*taux_droite
 
 
-def taux_erreur_test_arbre(arbre:Noeud, jeu_test:list, var_cible:str, var_cible_pos:list):
-    """revoie le taux d'erreur de l'arbre calculé à partir du jeu de test"""
-
-    nombre_erreur = 0
-
-    for element in jeu_test:
-        if element[var_cible] != exploitation(arbre, element):
-            nombre_erreur += 1
-
-    return nombre_erreur/len(jeu_test)
-
-
 def fonction_weakest_link(noeud:Noeud, jeu_apprentissage:list, var_cible:str, var_cible_pos:list):
     """associe à chaque noeud d'un arbre le résultat de la fonction de la méthode "weakest link pruning" """
 
