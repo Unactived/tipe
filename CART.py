@@ -179,14 +179,18 @@ def ensemble_noeud(noeud:Noeud)->list:
     return liste_noeud
 
 
-def sous_arbre_optimal(liste_noeud:list)->Noeud:
+def sous_arbre_optimal(liste_noeud:list):
     """renvoie le sous-arbre optimal de noeud"""
     
-    noeud_weakest_link = [noeud for noeud in liste_noeud if noeud.val_weakest_link == min([ noeud.val_weakest_link for noeud in liste_noeud]) ]
+    liste_noeud_parent = [noeud for noeud in liste_noeud if type(noeud.gauche) == Noeud or type(noeud.droite) == Noeud]
+
+    noeud_weakest_link = [noeud for noeud in liste_noeud_parent if noeud.val_weakest_link == min([ noeud.val_weakest_link for noeud in liste_noeud_parent]) ]
 
     for noeud in noeud_weakest_link:
-        noeud.gauche = noeud.val_estampillee_gauche
-        noeud.droite = noeud.val_estampillee_droite
+        # print("noeud.gauche avant affectation ", noeud.gauche)
+        noeud.gauche = [ noeud.val_estampillee_gauche ]
+        # print("noeud.gauche après affectation ", noeud.gauche)
+        noeud.droite = [ noeud.val_estampillee_droite ]
 
 
 def elagage(arbre:Noeud, jeu_apprentissage:list, jeu_test:list, var_cible:str, var_cible_pos:list)->Noeud:
@@ -200,22 +204,23 @@ def elagage(arbre:Noeud, jeu_apprentissage:list, jeu_test:list, var_cible:str, v
     liste_noeud = ensemble_noeud(sous_arbre)
     sous_arbre_optimal(liste_noeud)
     liste_sous_arbre = [arbre, sous_arbre]
-    i = 0
+
     while type(sous_arbre.gauche) == Noeud or type(sous_arbre.droite) == Noeud:
-        i+=1
-        print("len(liste_sous_arbre)", len(liste_sous_arbre))
+
+        # print("len(liste_sous_arbre)", len(liste_sous_arbre))
         
         arbre = liste_sous_arbre[-1]
         fonction_weakest_link(arbre, jeu_apprentissage, var_cible, var_cible_pos)
         
         sous_arbre = deepcopy(arbre)
         liste_noeud = ensemble_noeud(sous_arbre)
+        # print("liste_noeud", liste_noeud)
         sous_arbre_optimal(liste_noeud)
-        sous_arbre.afficher()
+        # sous_arbre.afficher()
         liste_sous_arbre.append( sous_arbre )
 
-    liste_erreur_test = [ taux_erreur_test_arbre(i, jeu_test, var_cible, var_cible_pos) for i in range(liste_sous_arbre)]
+    liste_erreur_test = [ taux_erreur_test_arbre(arbre, jeu_test, var_cible, var_cible_pos) for arbre in liste_sous_arbre]
 
-    indice_min = liste_erreur_test.indice(min(liste_erreur_test))
+    indice_min = liste_erreur_test.index(min(liste_erreur_test))
     
     return liste_sous_arbre[indice_min]
