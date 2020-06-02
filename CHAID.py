@@ -14,6 +14,9 @@ def test_khi_2(groupe:list, var_cible:str, var_cible_pos:tuple, indice_de_decoup
         G = sum([1 for groupe in groupeGauche if groupe[var_cible] == pos])
         D = sum([1 for groupe in groupeDroite if groupe[var_cible] == pos])
 
+        if G == D == 0:
+            continue
+
         theorique = (G + D) / 2
 
         khi_2 += (G - theorique)**2 / theorique
