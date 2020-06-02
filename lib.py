@@ -3,6 +3,7 @@
 from copy import deepcopy
 from random import choice
 
+
 # Commentaires temporaires
 # ceci pourrait être utilisé à la fois par CART et CHAID
 #
@@ -23,7 +24,7 @@ class Noeud:
 
     # ceci fixe les attributs possibles de la classe
     # cela permet notamment de grandement réduire la mémoire utilisée
-    __slots__ = ['caracteristique', 'seuil', 'gauche', 'droite', 'taux_erreur']
+    __slots__ = ['caracteristique', 'seuil', 'gauche', 'droite', 'val_estampillee_gauche','val_estampillee_droite','proportion_gauche','proportion_droite', 'val_weakest_link']
 
     def __init__(self, caracteristique: str, seuil: float):
         """
@@ -37,7 +38,11 @@ class Noeud:
         self.seuil = seuil
         self.gauche = None
         self.droite = None
-        self.taux_erreur = None
+        self.val_estampillee_gauche = None
+        self.val_estampillee_droite = None
+        self.proportion_gauche = None
+        self.proportion_droite = None
+        self.val_weakest_link = None
 
     def suivant(self, dico: dict):
         """
@@ -289,7 +294,10 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     # for i in range(len(resultats_fonction_heterogeneite[num_caract])):
     #     print("i", i, "resultats_fonction_heterogeneite[num_caract][i]", resultats_fonction_heterogeneite[num_caract][i])
     # cccccccccccc = liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]-1]
-    seuil = groupe[liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]]-1][caracteristique]
+    indice_max = l_max_indice[num_caract]
+    liste_indice_de_decoupage = liste_des_listes_indice_de_decoupage[num_caract]
+    element_seuil = liste_indice_de_decoupage[indice_max]-1 #-1, car on regarde les valeurs <= seuil
+    seuil = groupe[element_seuil][caracteristique]
     # print(" resultats_fonction_heterogeneite caracteristique", resultats_fonction_heterogeneite[num_caract])
 
     # print("seuil", seuil)
@@ -303,8 +311,10 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
     # print("caracteristique", caracteristique)
     # print("len(groupe_gauche)", len(groupe_gauche), "len(groupe_droite)", len(groupe_droite))
 
-    noeud = Noeud( liste_caract[num_caract], seuil )
-
+    noeud = Noeud( caracteristique, seuil )
+    # noeud.val_estampillee_gauche = estampillage(var_cible, var_cible_pos, groupe_gauche)
+    # noeud.val_estampillee_droite = estampillage(var_cible, var_cible_pos, groupe_droite)
+    
     if len(groupe_gauche) < 2*min:
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe_gauche)
         noeud.gauche = val_estampillee, frequence(groupe_gauche, var_cible, [val_estampillee]), len(groupe_gauche)
@@ -333,6 +343,7 @@ def suite_creation_arbre(noeud_parent, var_cible:str, var_cible_pos:list, min:in
             groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
             groupe_gauche = [dico for dico in groupe if dico[noeud_parent.caracteristique] <= noeud_parent.seuil]
             noeud_parent.gauche = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
+
             suite_creation_arbre(noeud_parent.gauche, var_cible, var_cible_pos, min, liste_caract, groupe_gauche, procedure)
 
         if noeud_parent.droite == None:
@@ -340,12 +351,14 @@ def suite_creation_arbre(noeud_parent, var_cible:str, var_cible_pos:list, min:in
             groupe = sorted(groupe, key=lambda variable: variable[noeud_parent.caracteristique])
             groupe_droite = [dico for dico in groupe if dico[noeud_parent.caracteristique] > noeud_parent.seuil]
             noeud_parent.droite = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
+
             suite_creation_arbre(noeud_parent.droite, var_cible, var_cible_pos, min, liste_caract, groupe_droite, procedure)
 
 def creation_arbre(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
     """crée un arbre"""
-
+    
     noeud_parent = creation_noeud(var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
+    
     suite_creation_arbre(noeud_parent,var_cible, var_cible_pos, min, liste_caract, groupe, procedure)
     
     return noeud_parent
@@ -364,18 +377,21 @@ def exploitation(arbre, individu):
 
     return noeud[0]
 
-def choix_aleatoire_jeu_test_et_apprentissage(groupe:list, proportion:float):
+def choix_aleatoire_jeu_test_et_apprentissage(groupe:list, proportion:float, var_cible, var_cible_pos):
     """prend en argument un groupe et la proportion du groupe qui doit servir de jeu d'apprentissage;
     renvoie le jeu d'apprentissage et le jeu de test"""
+    liste_classes = [ [element for element in groupe if element[var_cible] == classe] for classe in var_cible_pos]
     
     jeu_apprentissage = []
     
-    for i in range( int(proportion*len(groupe)) ):
-        element = choice(groupe)
-        while element in jeu_apprentissage:
-            element = choice(groupe)
-        jeu_apprentissage.append(element)
+    for classe in liste_classes:
+        for i in range( int(proportion*len(classe)) ):
+            element = choice(classe)
+            while element in jeu_apprentissage:
+                element = choice(classe)
+            jeu_apprentissage.append(element)
 
     jeu_test = [element for element in groupe if element not in jeu_apprentissage]
 
     return jeu_apprentissage, jeu_test
+

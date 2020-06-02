@@ -1,4 +1,9 @@
 from lib import *
+from copy import deepcopy
+
+
+# fonction d'hétérogénéité ___________________________________________________________________________
+
 
 def fonction_indice_de_Gini(frequence:list)->float:
     """fonction d'hétérogénéité calculant l'indice de diversité de Gini"""
@@ -31,48 +36,169 @@ def procedure_indice_de_diversite_de_Gini(groupe:list, var_cible:str, var_cible_
     return  Gini_parent - (proportion_gauche*Gini_gauche + proportion_droite*Gini_droite)
 
 
-def taux_erreur_noeud(noeud, jeu_test:list, var_cible, var_cible_pos):
-    """associe à un noeud son taux d'erreur calculé à partir du jeu de test"""
-    
-    jeu_test_gauche = [dico for dico in jeu_test if dico[noeud.caracteristique] <= noeud.seuil]
-    jeu_test_droite = [dico for dico in jeu_test if dico[noeud.caracteristique] > noeud.seuil]
+# élagage ___________________________________________________________________________
 
-    val_estampillee_gauche = estampillage(var_cible, var_cible_pos, jeu_test_gauche)
-    val_estampillee_droite = estampillage(var_cible, var_cible_pos, jeu_test_droite)
+
+def estampillage_arbre(noeud:Noeud, jeu_apprentissage:list, var_cible, var_cible_pos):
+    """associe à chaque noeud d'un arbre la valeur de var_cible la plus présente."""
+
+    if type(noeud) == Noeud:
+        
+        n = len(jeu_apprentissage)
+        
+        jeu_apprentissage_gauche = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] <= noeud.seuil]
+        noeud.proportion_gauche = len(jeu_apprentissage_gauche) / n
+        noeud.val_estampillee_gauche = estampillage(var_cible, var_cible_pos, jeu_apprentissage_gauche)
+        
+        jeu_apprentissage_droite = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] > noeud.seuil]
+        noeud.proportion_droite = len(jeu_apprentissage_droite) / n
+        noeud.val_estampillee_droite = estampillage(var_cible, var_cible_pos, jeu_apprentissage_droite)
+
+    if type(noeud.gauche) == Noeud:
+        estampillage_arbre(noeud.gauche, jeu_apprentissage_gauche, var_cible, var_cible_pos)
+
+    if type(noeud.droite) == Noeud:
+        estampillage_arbre(noeud.droite, jeu_apprentissage_droite, var_cible, var_cible_pos)
+
+
+def compter_feuille(noeud:Noeud):
+    """prend en argument un noeud ;
+    renvoie le nombre de feuilles de l'arbre issu de noeud"""
+
+    if type(noeud) != Noeud:
+        return 1
+
+    return compter_feuille(noeud.gauche) + compter_feuille(noeud.droite)
+
+
+def taux_erreur_apprentissage_noeud(noeud:Noeud, jeu_apprentissage:list, var_cible, var_cible_pos)->float:
+    """associe à un noeud son taux d'erreur calculé à partir du jeu d'apprentissage"""
+    
+    jeu_apprentissage_gauche = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] <= noeud.seuil]
+    jeu_apprentissage_droite = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] > noeud.seuil]
+
+    val_estampillee_gauche = noeud.val_estampillee_gauche
+    val_estampillee_droite = noeud.val_estampillee_droite
 
     nombre_erreur = 0
-    for i in jeu_test_gauche:
+    
+    for i in jeu_apprentissage_gauche:
         if i[var_cible] != val_estampillee_gauche:
             nombre_erreur +=1
 
-    for i in jeu_test_droite:
+    for i in jeu_apprentissage_droite:
         if i[var_cible] != val_estampillee_droite:
             nombre_erreur +=1
 
-    n = len(jeu_test)
+    n = len(jeu_apprentissage)
 
-    noeud.taux_erreur = nombre_erreur / n
+    return nombre_erreur / n
 
-def taux_erreur_arbre(noeud, jeu_test, var_cible, var_cible_pos):
-    """associe à chaque noeud de l'arbre récursivement son taux d'erreur calculé à partir du jeu de test"""
 
-    taux_erreur_noeud(noeud, jeu_test, var_cible, var_cible_pos)
+def taux_erreur_apprentissage_arbre(noeud:Noeud, jeu_apprentissage:list, var_cible, var_cible_pos)->float:
+    """associe à un arbre son taux d'erreur calculé à partir du jeu d'apprentissage"""
+
+    jeu_apprentissage_gauche = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] <= noeud.seuil]
+    jeu_apprentissage_droite = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] > noeud.seuil]
     
     if type(noeud.gauche) == Noeud:
-        jeu_test_gauche = [dico for dico in jeu_test if dico[noeud.caracteristique] <= noeud.seuil]
-        taux_erreur_arbre(noeud.gauche, jeu_test_gauche, var_cible, var_cible_pos)
+        taux_gauche = taux_erreur_apprentissage_arbre(noeud.gauche, jeu_apprentissage_gauche, var_cible, var_cible_pos)
     
+    
+    else:
+        val_estampillee_gauche = noeud.val_estampillee_gauche
+        nombre_erreur = 0
+        
+        for i in jeu_apprentissage_gauche:
+            if i[var_cible] != val_estampillee_gauche:
+                nombre_erreur +=1
+        
+        taux_gauche = nombre_erreur / len(jeu_apprentissage_gauche)
+
     if type(noeud.droite) == Noeud:
-        jeu_test_droite = [dico for dico in jeu_test if dico[noeud.caracteristique] <= noeud.seuil]
-        taux_erreur_arbre(noeud.droite, jeu_test_droite, var_cible, var_cible_pos)
-
-# def suppression_noeud(noeud_parent, noeud):
-#     """supprime un noeud si son taux d'erreur est supérieur à son noeud parent"""
-
-#     if noeud_parent.taux_erreur < noeud.taux_erreur:
-#         del()
-# def elagage(noeud, jeu_test, var_cible, var_cible_pos):
-#     """supprime les noeuds de l'arbre qui diminuent la précision du modèle"""
+        taux_droite = taux_erreur_apprentissage_arbre(noeud.droite, jeu_apprentissage_droite, var_cible, var_cible_pos)
     
-#     taux_erreur_arbre(noeud, jeu_test, var_cible, var_cible_pos)
+    else:
+        val_estampillee_droite = noeud.val_estampillee_droite
+        nombre_erreur = 0
+        
+        for i in jeu_apprentissage_droite:
+            if i[var_cible] != val_estampillee_droite:
+                nombre_erreur +=1
+        
+        taux_droite = nombre_erreur / len(jeu_apprentissage_droite)
+    
+    return noeud.proportion_gauche*taux_gauche + noeud.proportion_droite*taux_droite
 
+
+def taux_erreur_test_arbre(arbre:Noeud, jeu_test:list, var_cible:str, var_cible_pos:list):
+    """revoie le taux d'erreur de l'arbre calculé à partir du jeu de test"""
+
+    nombre_erreur = 0
+
+    for element in jeu_test:
+        if element[var_cible] != exploitation(arbre, element):
+            nombre_erreur += 1
+
+    return nombre_erreur/len(jeu_test)
+
+
+def fonction_weakest_link(noeud:Noeud, jeu_apprentissage:list, var_cible:str, var_cible_pos:list, liste_noeud:list):
+    """associe à chaque noeud d'un arbre le résultat de la fonction de la méthode "weakest link pruning" ;
+    ajoute aussi à liste_noeud l'ensemble des noeud de l'arbre "noeud" donné en entré """
+
+    if type(noeud) == Noeud:
+        
+        taux_noeud = taux_erreur_apprentissage_noeud(noeud, jeu_apprentissage, var_cible, var_cible_pos)
+        taux_arbre = taux_erreur_apprentissage_arbre(noeud, jeu_apprentissage, var_cible, var_cible_pos)
+        feuilles = compter_feuille(noeud)
+        
+        noeud.val_weakest_link = ( taux_noeud - taux_arbre ) / ( feuilles - 1)
+        
+        liste_noeud.append(noeud)
+
+        jeu_apprentissage_gauche = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] <= noeud.seuil]
+        jeu_apprentissage_droite = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] > noeud.seuil]
+        fonction_weakest_link(noeud.gauche, jeu_apprentissage_gauche, var_cible, var_cible_pos, liste_noeud)
+        fonction_weakest_link(noeud.droite, jeu_apprentissage_droite, var_cible, var_cible_pos, liste_noeud)
+
+def sous_arbre_optimal(arbre:Noeud, liste_noeud:list)->Noeud:
+    """renvoie le sous-arbre optimal de noeud"""
+    
+    arbre = deepcopy(arbre)
+    noeud_weakest_link = [noeud for noeud in liste_noeud if noeud.val_weakest_link == min([ noeud.val_weakest_link for noeud in liste_noeud]) ]
+
+    for noeud in noeud_weakest_link:
+        noeud.gauche = noeud.val_estampillee_gauche
+        noeud.droite = noeud.val_estampillee_droite
+
+    return arbre
+
+def elagage(arbre:Noeud, jeu_apprentissage:list, jeu_test:list, var_cible:str, var_cible_pos:list)->Noeud:
+    """renvoie l'arbre élagué """
+
+    estampillage_arbre(arbre, jeu_apprentissage, var_cible, var_cible_pos)
+
+    liste_noeud = []
+    fonction_weakest_link(arbre, jeu_apprentissage, var_cible, var_cible_pos, liste_noeud)
+
+    sous_arbre = sous_arbre_optimal(arbre, liste_noeud)
+    liste_sous_arbre = [arbre, sous_arbre]
+
+    while liste_sous_arbre[-1] != liste_sous_arbre[-2]:
+        print("len(liste_sous_arbre)", len(liste_sous_arbre))
+        
+        sous_arbre = deepcopy(liste_sous_arbre[-1])
+        
+        liste_noeud = []
+        fonction_weakest_link(sous_arbre, jeu_apprentissage, var_cible, var_cible_pos, liste_noeud)
+        
+        nouveau_sous_arbre = sous_arbre_optimal(sous_arbre, liste_noeud)
+        nouveau_sous_arbre.afficher()
+        liste_sous_arbre.append( nouveau_sous_arbre )
+
+    liste_erreur_test = [ taux_erreur_test_arbre(i, jeu_test, var_cible, var_cible_pos) for i in range(liste_sous_arbre)]
+
+    indice_min = liste_erreur_test.indice(min(liste_erreur_test))
+    
+    return liste_sous_arbre[indice_min]
