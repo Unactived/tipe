@@ -143,9 +143,8 @@ def taux_erreur_test_arbre(arbre:Noeud, jeu_test:list, var_cible:str, var_cible_
     return nombre_erreur/len(jeu_test)
 
 
-def fonction_weakest_link(noeud:Noeud, jeu_apprentissage:list, var_cible:str, var_cible_pos:list, liste_noeud:list):
-    """associe à chaque noeud d'un arbre le résultat de la fonction de la méthode "weakest link pruning" ;
-    ajoute aussi à liste_noeud l'ensemble des noeud de l'arbre "noeud" donné en entré """
+def fonction_weakest_link(noeud:Noeud, jeu_apprentissage:list, var_cible:str, var_cible_pos:list):
+    """associe à chaque noeud d'un arbre le résultat de la fonction de la méthode "weakest link pruning" """
 
     if type(noeud) == Noeud:
         
@@ -155,47 +154,65 @@ def fonction_weakest_link(noeud:Noeud, jeu_apprentissage:list, var_cible:str, va
         
         noeud.val_weakest_link = ( taux_noeud - taux_arbre ) / ( feuilles - 1)
         
-        liste_noeud.append(noeud)
-
         jeu_apprentissage_gauche = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] <= noeud.seuil]
         jeu_apprentissage_droite = [dico for dico in jeu_apprentissage if dico[noeud.caracteristique] > noeud.seuil]
-        fonction_weakest_link(noeud.gauche, jeu_apprentissage_gauche, var_cible, var_cible_pos, liste_noeud)
-        fonction_weakest_link(noeud.droite, jeu_apprentissage_droite, var_cible, var_cible_pos, liste_noeud)
+        fonction_weakest_link(noeud.gauche, jeu_apprentissage_gauche, var_cible, var_cible_pos)
+        fonction_weakest_link(noeud.droite, jeu_apprentissage_droite, var_cible, var_cible_pos)
 
-def sous_arbre_optimal(arbre:Noeud, liste_noeud:list)->Noeud:
+
+def ensemble_noeud_recursif(noeud:Noeud, liste_noeud:list):
+    """modifie liste_noeud qui contiendra l'ensemble des noeuds de l'arbre donné en entrée"""
+    
+    if type(noeud) == Noeud:
+        liste_noeud.append(noeud)
+
+        ensemble_noeud_recursif(noeud.gauche, liste_noeud)
+        ensemble_noeud_recursif(noeud.droite, liste_noeud)
+
+
+def ensemble_noeud(noeud:Noeud)->list:
+    """revoie la liste contenant l'ensemble des noeuds de l'arbre donné en entrée"""
+    
+    liste_noeud = []
+    ensemble_noeud_recursif(noeud, liste_noeud)
+
+    return liste_noeud
+
+
+def sous_arbre_optimal(liste_noeud:list)->Noeud:
     """renvoie le sous-arbre optimal de noeud"""
     
-    arbre = deepcopy(arbre)
     noeud_weakest_link = [noeud for noeud in liste_noeud if noeud.val_weakest_link == min([ noeud.val_weakest_link for noeud in liste_noeud]) ]
 
     for noeud in noeud_weakest_link:
         noeud.gauche = noeud.val_estampillee_gauche
         noeud.droite = noeud.val_estampillee_droite
 
-    return arbre
 
 def elagage(arbre:Noeud, jeu_apprentissage:list, jeu_test:list, var_cible:str, var_cible_pos:list)->Noeud:
     """renvoie l'arbre élagué """
 
     estampillage_arbre(arbre, jeu_apprentissage, var_cible, var_cible_pos)
 
-    liste_noeud = []
-    fonction_weakest_link(arbre, jeu_apprentissage, var_cible, var_cible_pos, liste_noeud)
+    fonction_weakest_link(arbre, jeu_apprentissage, var_cible, var_cible_pos)
 
-    sous_arbre = sous_arbre_optimal(arbre, liste_noeud)
+    sous_arbre = deepcopy(arbre)
+    liste_noeud = ensemble_noeud(sous_arbre)
+    sous_arbre_optimal(liste_noeud)
     liste_sous_arbre = [arbre, sous_arbre]
-
-    while liste_sous_arbre[-1] != liste_sous_arbre[-2]:
+    i = 0
+    while type(sous_arbre.gauche) == Noeud or type(sous_arbre.droite) == Noeud:
+        i+=1
         print("len(liste_sous_arbre)", len(liste_sous_arbre))
         
-        sous_arbre = deepcopy(liste_sous_arbre[-1])
+        arbre = liste_sous_arbre[-1]
+        fonction_weakest_link(arbre, jeu_apprentissage, var_cible, var_cible_pos)
         
-        liste_noeud = []
-        fonction_weakest_link(sous_arbre, jeu_apprentissage, var_cible, var_cible_pos, liste_noeud)
-        
-        nouveau_sous_arbre = sous_arbre_optimal(sous_arbre, liste_noeud)
-        nouveau_sous_arbre.afficher()
-        liste_sous_arbre.append( nouveau_sous_arbre )
+        sous_arbre = deepcopy(arbre)
+        liste_noeud = ensemble_noeud(sous_arbre)
+        sous_arbre_optimal(liste_noeud)
+        sous_arbre.afficher()
+        liste_sous_arbre.append( sous_arbre )
 
     liste_erreur_test = [ taux_erreur_test_arbre(i, jeu_test, var_cible, var_cible_pos) for i in range(liste_sous_arbre)]
 
