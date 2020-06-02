@@ -395,3 +395,14 @@ def choix_aleatoire_jeu_test_et_apprentissage(groupe:list, proportion:float, var
 
     return jeu_apprentissage, jeu_test
 
+
+def taux_erreur_test_arbre(arbre:Noeud, jeu_test:list, var_cible:str, var_cible_pos:list):
+    """revoie le taux d'erreur de l'arbre calculé à partir du jeu de test"""
+
+    nombre_erreur = 0
+
+    for element in jeu_test:
+        if element[var_cible] != exploitation(arbre, element):
+            nombre_erreur += 1
+
+    return nombre_erreur/len(jeu_test)
