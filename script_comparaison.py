@@ -2,6 +2,8 @@ from CHAID import *
 from CART  import *
 from pickle import dump
 from time import perf_counter
+import sys
+sys.setrecursionlimit(10000)
 
 caracteristiques, dictionnaires = c45_interpreter("spambase.names", "spambase.data")
 del(dictionnaires[0])
