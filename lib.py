@@ -201,10 +201,10 @@ def frequence(groupe:list, caracteristique:str, var_cible_pos:tuple)->list:
 
 
 #var_cible := la variable déterminée.
-#var_cible_pos := tuple des différentes valeurs que prend var_cible (par ex: (mort, vivant) )
+#var_cible_pos := tuple des différentes valeurs que prend var_cible (par ex: (0, 1) )
 #min := nombre minimal d'élément dans les feuilles (à partir de 1)
 #liste_caract := liste des caractéristiques sauf la var_cible
-#groupe := liste de dictionnaires (représentant les éléments)
+#groupe := liste de dictionnaires (les dictionnaires représentant les individus)
 
 def estampillage(var_cible:str, var_cible_pos:list, groupe:list):
     """renvoie la valeur de var_cible la plus présente parmi groupe"""
@@ -219,18 +219,15 @@ def estampillage(var_cible:str, var_cible_pos:list, groupe:list):
 test = 0
 
 def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure:'function'):
-    global test
-    # print("len(groupe)",len(groupe))
-    # if len(groupe) <= 2*min:
-    #     print("Groupe donné en entrée trop petit")
-    #     return False
+    global test#pour observer en temps réel combien de noeuds ont été créé
+
     resultats_fonction_heterogeneite = []
     liste_des_listes_indice_de_decoupage = []
     for caracteristique in liste_caract:
         print("test,caracteristique", test, caracteristique)
-        groupe = sorted(groupe, key=lambda variable: variable[caracteristique])#les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
-        # print("len(groupe)", len(groupe))
-        # print("list(range(min, len(groupe)-min+1))", list(range(min, len(groupe)-min+1)))
+        groupe = sorted(groupe, key=lambda variable: variable[caracteristique])
+        #les dictionnaires de la liste sont classés par ordre croissant selon la caractéristique
+
         assert min <= len(groupe)-min+1, "min est trop grand"
 
         liste_indice_de_decoupage = []
@@ -244,77 +241,42 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
             resultats_fonction_heterogeneite.append([0])#ce que renverrait procedure en n'importe quel point de decoupage
             continue
 
-        # print("liste_indice_de_decoupage", liste_indice_de_decoupage)
         resultats_fonction_heterogeneite.append( [ procedure(groupe, var_cible, var_cible_pos, indice_de_decoupage) for indice_de_decoupage in liste_indice_de_decoupage ] )
-        # for i in groupe:
-        #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
-        # print("resultats_fonction_heterogeneite", resultats_fonction_heterogeneite)
         #la liste créée par compréhension est la liste des valeurs renvoyées par la fonction d'hétérogénéité pour toute les valeurs possibles
         #Ainsi, dans resultats_fonction_heterogeneite, il y a une liste par caractéristiques
         
     #ici commence l'algorithme de recherche du maximum
     #pour chaque liste de resultats_fonction_heterogeneite, correspondant à une caractéristiques, on cherche le maximum.
     #Ainsi, on a le meilleur point de coupure par caractéristique.
-    #Ensuite, on compare le maximum des caractéristiques. On aboutit au maximum parmi toutes les caractéristiques et toutes les valeurs, càd le meilleur point de coupure.
-    
-    # print(" resultats_fonction_heterogeneite")
-    # for i in range(len(resultats_fonction_heterogeneite)):
-    #     print("caracteristique", liste_caract[i], "resultats_fonction_heterogeneite", resultats_fonction_heterogeneite[i])
-    # print("len(groupe)", len(groupe))
+    #Ensuite, on compare le maximum des caractéristiques. On aboutit au maximum parmi toutes les caractéristiques et toutes les valeurs, c'est-à-dire le meilleur point de coupure.
+
     l_max_var = [max(l) for l in resultats_fonction_heterogeneite ]
-    # print("l_max_var", l_max_var)
+
     l_max_indice = [l.index(max(l)) for l in resultats_fonction_heterogeneite ]
-    # print("l_max_var", l_max_var, "\nl_max_indice", l_max_indice)
+
     
     max_f_htn = max(l_max_var) #valeur maximale de la fonction d'hétérogénéité
-    # print("max_f_htn", max_f_htn)
 
     if max_f_htn == 0:#équivaut au fait que le groupe soit homogène
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe)
         return val_estampillee, frequence(groupe, var_cible, [val_estampillee]), len(groupe)
     
     num_caract = l_max_var.index(max_f_htn)
-    # print("num_caract", num_caract)
-    # print("resultats_fonction_heterogeneite[num_caract]", resultats_fonction_heterogeneite[num_caract])
+
     caracteristique = liste_caract[num_caract]
-    # print("caracteristique", caracteristique)
+
     groupe = sorted(groupe, key=lambda variable: variable[caracteristique])
-    # for i in groupe:
-    #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
-    # aaaaaaaaaaaa = l_max_indice[num_caract]
-    # bbbbbbbfgdfg = liste_des_listes_indice_de_decoupage[num_caract]
-    
-    # print("l_max_var", l_max_var)
-    # print("l_max_var[num_caract]", l_max_var[num_caract])
-    # print("l_max_indice", l_max_indice)
-    # print("l_max_indice[num_caract]", l_max_indice[num_caract])
-    # print(" resultats_fonction_heterogeneite", resultats_fonction_heterogeneite[num_caract])
-    # for i in range(len(liste_des_listes_indice_de_decoupage[num_caract])):
-    #     print("i", i, "liste_des_listes_indice_de_decoupage[num_caract][i]", liste_des_listes_indice_de_decoupage[num_caract][i])
-    # for i in range(len(resultats_fonction_heterogeneite[num_caract])):
-    #     print("i", i, "resultats_fonction_heterogeneite[num_caract][i]", resultats_fonction_heterogeneite[num_caract][i])
-    # cccccccccccc = liste_des_listes_indice_de_decoupage[num_caract][l_max_indice[num_caract]-1]
+
     indice_max = l_max_indice[num_caract]
     liste_indice_de_decoupage = liste_des_listes_indice_de_decoupage[num_caract]
     element_seuil = liste_indice_de_decoupage[indice_max]-1 #-1, car on regarde les valeurs <= seuil
     seuil = groupe[element_seuil][caracteristique]
-    # print(" resultats_fonction_heterogeneite caracteristique", resultats_fonction_heterogeneite[num_caract])
-
-    # print("seuil", seuil)
-    # for i in groupe:
-    #     print("i[caracteristique]", i[caracteristique], "caracteristique",caracteristique, """i[var_cible]""", i[var_cible])
-        
+  
     groupe_gauche = [dico for dico in groupe if dico[caracteristique] <= seuil]
     groupe_droite = [dico for dico in groupe if dico[caracteristique] > seuil]
-    # print("groupe_droite", groupe_droite)
-    # print("groupe == groupe_gauche",groupe == groupe_gauche)
-    # print("caracteristique", caracteristique)
-    # print("len(groupe_gauche)", len(groupe_gauche), "len(groupe_droite)", len(groupe_droite))
 
     noeud = Noeud( caracteristique, seuil )
-    # noeud.val_estampillee_gauche = estampillage(var_cible, var_cible_pos, groupe_gauche)
-    # noeud.val_estampillee_droite = estampillage(var_cible, var_cible_pos, groupe_droite)
-    
+
     if len(groupe_gauche) < 2*min:
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe_gauche)
         noeud.gauche = val_estampillee, frequence(groupe_gauche, var_cible, [val_estampillee]), len(groupe_gauche)
@@ -323,11 +285,6 @@ def creation_noeud(var_cible:str, var_cible_pos:list, min:int, liste_caract:list
         val_estampillee = estampillage(var_cible, var_cible_pos, groupe_droite)
         noeud.droite = val_estampillee, frequence(groupe_droite, var_cible, [val_estampillee]), len(groupe_droite)
 
-
-    # print("noeud.gauche", noeud.gauche, "noeud.droite", noeud.droite)
-    
-    # noeud.afficher()
-    
     return noeud
 
 def suite_creation_arbre(noeud_parent, var_cible:str, var_cible_pos:list, min:int, liste_caract:list, groupe:list, procedure):
