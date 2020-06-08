@@ -6,9 +6,6 @@ def test_khi_2(groupe:list, var_cible:str, var_cible_pos:tuple, indice_de_decoup
 
     khi_2 = 0
 
-    resultats = {}
-
-    # peut-être pas optimal
     for pos in var_cible_pos:
 
         G = sum([1 for groupe in groupeGauche if groupe[var_cible] == pos])
