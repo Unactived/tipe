@@ -105,7 +105,7 @@ def taux_erreur_apprentissage_arbre(noeud:Noeud, jeu_apprentissage:list, var_cib
         taux_gauche = taux_erreur_apprentissage_arbre(noeud.gauche, jeu_apprentissage_gauche, var_cible, var_cible_pos)
     
     
-    else:
+    else:#si c'est une feuille
         val_estampillee_gauche = noeud.val_estampillee_gauche
         nombre_erreur = 0
         
@@ -175,9 +175,9 @@ def sous_arbre_optimal(liste_noeud:list):
     noeud_weakest_link = [noeud for noeud in liste_noeud_parent if noeud.val_weakest_link == min([ noeud.val_weakest_link for noeud in liste_noeud_parent]) ]
 
     for noeud in noeud_weakest_link:
-        # print("noeud.gauche avant affectation ", noeud.gauche)
+
         noeud.gauche = [ noeud.val_estampillee_gauche ]
-        # print("noeud.gauche après affectation ", noeud.gauche)
+
         noeud.droite = [ noeud.val_estampillee_droite ]
 
 
@@ -194,17 +194,15 @@ def elagage(arbre:Noeud, jeu_apprentissage:list, jeu_test:list, var_cible:str, v
     liste_sous_arbre = [arbre, sous_arbre]
 
     while type(sous_arbre.gauche) == Noeud or type(sous_arbre.droite) == Noeud:
-
-        # print("len(liste_sous_arbre)", len(liste_sous_arbre))
         
         arbre = liste_sous_arbre[-1]
         fonction_weakest_link(arbre, jeu_apprentissage, var_cible, var_cible_pos)
         
         sous_arbre = deepcopy(arbre)
         liste_noeud = ensemble_noeud(sous_arbre)
-        # print("liste_noeud", liste_noeud)
+
         sous_arbre_optimal(liste_noeud)
-        # sous_arbre.afficher()
+
         liste_sous_arbre.append( sous_arbre )
 
     liste_erreur_test = [ taux_erreur_test_arbre(arbre, jeu_test, var_cible, var_cible_pos) for arbre in liste_sous_arbre]
